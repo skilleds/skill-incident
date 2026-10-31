@@ -3,6 +3,16 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [0.4.0] — 2026-10-31
+### Adicionado
+- `references/mitigacao.md` §2b: a IA não executa mitigação direta na VPS; mitiga por operação do ops
+  (rollback/restart/flag); break-glass é humano e auditado; falta de comando vira PR no ops.
+- `references/postmortem.md`: registro obrigatório de desvios de acesso.
+- Porquê: alinhamento aos pisos 23-24 da `schematize-engineering`.
+
+### Mantido (piso inalterado)
+- SEV, papéis, LGPD, comunicação; `description` inalterada.
+
 ## [0.3.0] — 2026-10-15
 ### Alterado
 - Fronteira e `references/recorrencia.md` apontam para `schematize-regression`: o postmortem exige o teste

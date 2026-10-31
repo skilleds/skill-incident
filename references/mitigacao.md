@@ -24,10 +24,23 @@
 | Limitar taxa / bloquear origem | Abuso, tempestade de retry | Registrar a regra para remover depois |
 | Rollforward (correção) | Rollback impossível | Só com revisão rápida de 2 pares; é a opção de maior risco |
 
+## 2b. Quem executa a mitigação em prd (pisos 23-24 da `schematize-engineering`)
+
+- **A IA não executa mitigação direta na VPS** (sem ssh mutável, sem `systemctl`/`docker`/SQL na
+  mão). Ela mitiga **por operação nomeada do ops**: `rollback`, `restart`, flag/kill-switch,
+  `health`/`logs` para evidência. Operação destrutiva pede confirmação humana (e decisão do IC).
+- Falta a operação? **Implementa-se no repo do ops, via git** — não se contorna por ssh. Rollback é
+  para SHA/tag do git; nada de copiar arquivo para o servidor.
+- **Break-glass** (acesso direto de emergência) é **humano e auditado**, nunca da IA; o IC o
+  autoriza e registra quem/quando/por quê no canal.
+- O **postmortem registra todo desvio** (uso de break-glass, ação fora do ops, comando que faltou no
+  ops) e abre ação de prevenção: implementar a operação no ops.
+
 ## 3. Proibido na mitigação
 
 - Ação destrutiva e irreversível (apagar dado, `DROP`, `terraform destroy`, force-push) sem decisão
   explícita do IC registrada. Em prd, o plano de rollback vem **antes** da ação.
+- Mitigação da IA por ssh/script próprio na VPS (ver 2b): vetado; só via ops.
 - Mexer sem narrar: toda ação no canal antes de executar ("vou reverter X, ok?").
 - "Corrigir" mudando várias coisas ao mesmo tempo: uma alavanca por vez, senão não se sabe o que funcionou.
 - Disparar efeito externo de verdade para "testar" a correção (e-mail, cobrança, webhook): use o

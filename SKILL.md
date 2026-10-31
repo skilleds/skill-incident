@@ -98,7 +98,7 @@ Assets: `assets/templates/postmortem.md` · `assets/templates/timeline.md` · `a
 
 1. **Severidade por critério objetivo**, não por humor; na dúvida sobe um nível; reclassificação é dita e registrada.
 2. **Um IC por incidente**, que não mexe no sistema em SEV1/2; passagem de comando explícita.
-3. **Mitigar antes de diagnosticar:** estancar primeiro (reverter o último que mudou), uma alavanca por vez, tudo narrado no canal.
+3. **Mitigar antes de diagnosticar:** estancar primeiro (reverter o último que mudou), uma alavanca por vez, tudo narrado no canal. A IA não mitiga direto na VPS: só por operação do ops (rollback/restart/flag); break-glass é humano e auditado; desvio vai pro postmortem (`mitigacao.md` §2b).
 4. **Ação destrutiva e irreversível só por decisão registrada do IC**, com rollback pensado antes.
 5. **Silêncio é falha:** SEV1/2 tem primeira nota e cadência fixas, terminando com a hora da próxima. Status page fora da infra afetada.
 6. **Dado pessoal exposto é SEV1 até provar o contrário** e abre o relógio da LGPD/ANPD na hora; a decisão (comunicar ou não, com justificativa) é escrita.

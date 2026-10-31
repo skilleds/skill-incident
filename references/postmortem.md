@@ -11,6 +11,10 @@
 - Mora em `<projeto>/<projeto>_archive/` (`schematize-archive`), arquivo `postmortems/AAAA-MM-DD-inc-NNN-<slug>.md`;
   a decisão derivada vira ADR em `decisoes/ADR-NNNN-<slug>.md` (`schematize-docs → references/adr.md`).
 
+> **Desvios de acesso:** registre todo uso de break-glass, ação fora do ops ou comando que faltou
+> no ops (pisos 23-24 da `schematize-engineering`); a ação de prevenção é implementar a operação
+> no repo do ops, via git.
+
 ## 2. Estrutura (molde em `assets/templates/postmortem.md`)
 
 Cabeçalho (severidade, janela, IC, **Dados pessoais**, **ANPD**) · Resumo · Impacto quantificado ·
