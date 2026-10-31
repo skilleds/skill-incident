@@ -3,7 +3,7 @@ name = "schematize-incident"
 tag = "Disciplina · Resposta a incidente"
 status = "beta"
 order = 47
-current_version = "0.3.0"
+current_version = "0.4.0"
 href = "/incident"
 
 [descriptions]

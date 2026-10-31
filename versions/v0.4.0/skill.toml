@@ -1,0 +1,12 @@
+slug = "incident"
+name = "schematize-incident"
+tag = "Disciplina · Resposta a incidente"
+status = "beta"
+order = 47
+current_version = "0.4.0"
+href = "/incident"
+
+[descriptions]
+pt = "Resposta a incidente da casa: severidade SEV1-4 por critério objetivo, papéis (IC, comms, ops, escriba), mitigar antes de diagnosticar, comunicação no ritmo certo, LGPD/ANPD quando há dado pessoal, postmortem blameless com impacto medido e ações com dono e prazo, e incidente recorrente virando ADR + piso + gate."
+en = "The house's incident response: SEV1-4 severity by objective criteria, roles (IC, comms, ops, scribe), mitigate before diagnosing, communication on a fixed cadence, LGPD/ANPD handling when personal data is involved, blameless postmortems with measured impact and owned, dated action items, and recurring incidents becoming ADR + floor rule + gate."
+es = "La respuesta a incidentes de la casa: severidad SEV1-4 por criterio objetivo, roles (IC, comms, ops, escriba), mitigar antes de diagnosticar, comunicación con cadencia fija, LGPD/ANPD cuando hay datos personales, postmortem sin culpa con impacto medido y acciones con dueño y plazo, e incidente recurrente convertido en ADR + piso + gate."
