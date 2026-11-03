@@ -1,7 +1,7 @@
 ---
 name: schematize-incident
 metadata:
-  version: 0.4.0
+  version: 0.5.0
 description: >-
   Resposta a incidente: SEV1-4 objetivo, papéis (IC, comms), mitigar antes de diagnosticar, LGPD/ANPD, postmortem blameless. Use ao declarar incidente. Alertas: schematize-observability.
 ---
@@ -14,7 +14,7 @@ Esta skill é a dona do ciclo humano do incidente: classificar, comandar, mitiga
 pessoal, aprender (postmortem blameless) e **impedir a volta** (incidente recorrente vira ADR + piso + gate).
 Detectar e alertar é da `schematize-observability`; recuperar de desastre é da `schematize-infra`.
 
-**Versão:** skill `schematize-incident` v0.4.0. Changelog em `CHANGELOG.md`.
+**Versão:** skill `schematize-incident` v0.5.0. Changelog em `CHANGELOG.md`.
 
 ## Precedência e herança (leia antes de divergir)
 
