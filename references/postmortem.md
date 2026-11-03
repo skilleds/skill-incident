@@ -17,10 +17,17 @@
 
 ## 2. Estrutura (molde em `assets/templates/postmortem.md`)
 
-Cabeçalho (severidade, janela, IC, **Dados pessoais**, **ANPD**) · Resumo · Impacto quantificado ·
+Cabeçalho (severidade, janela, IC, **Dados pessoais**, **ANPD**, **Dado perdido**) · Resumo · Impacto quantificado ·
 Timeline · Causa e fatores contribuintes (cadeia de porquês) · O que funcionou e o que não · Action items · Recorrência.
 
+> **Fila/dado:** se o incidente envolveu fila, DLQ, outbox ou backlog, o cabeçalho traz
+> `Dado perdido: sim|não` com a **prova** (contagem entrou/saiu, DLQ triada, reentrega idempotente
+> conferida — piso 28). O gate cobra a linha quando o texto menciona fila/DLQ/outbox/backlog.
+> Publique o postmortem com commit + push na hora (piso 22).
+
 ## 3. Impacto quantificado
+
+O gate exige **escopo + duração** (ex.: "1.200 clientes por 28 min"); "1 erro" não passa.
 
 "Alguns clientes ficaram sem pagar" não é impacto. É: **1.200 clientes (8%) por 28 min, 3.400 requisições
 com erro, R$ 12 mil de receita retardada, 22% do error budget mensal**. Números vêm do SLI/telemetria
@@ -49,7 +56,7 @@ Cada item: **dono (@handle), prazo (AAAA-MM-DD), tipo** (prevenir · detectar ·
 
 `bash scripts/check-postmortem.sh <arquivo|pasta>` — 0 passa · 1 reprova · 2 nada para verificar.
 Regras: `secao-ausente`, `timeline-curta`, `sem-mitigacao`, `impacto-sem-numero`, `causa-sem-porques`,
-`sem-acoes`, `acao-sem-dono`, `acao-sem-prazo`, `culpa-pessoa`, `dados-pessoais-indefinido`, `anpd-sem-decisao`.
+`sem-acoes`, `acao-sem-dono`, `acao-sem-prazo`, `culpa-pessoa`, `dados-pessoais-indefinido`, `anpd-sem-decisao`, `dado-perdido-indefinido`.
 Waiver por regra: `<!-- inc-ok: <regra> — <motivo> -->`. O gate lê estrutura, não verdade: um texto
 formalmente ok ainda precisa de revisão humana do argumento.
 

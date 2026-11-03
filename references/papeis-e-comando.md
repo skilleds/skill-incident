@@ -30,5 +30,9 @@
   registra: início do impacto, detecção, declaração, cada hipótese descartada, cada ação (e o
   resultado), mitigação, resolução. `assets/templates/timeline.md` é o molde.
 - A timeline viva vira a seção "Timeline" do postmortem sem reescrita pesada.
+- **Ritmo de registro (piso 26):** o escriba/IC grava no `<projeto>_archive/` um **relatório a cada 30 min**
+  (estado, hipótese, ação, próximo passo) e um **handoff do IC** a cada passagem de comando (e ao menos a
+  cada 6 h), com **commit + push na hora**. No fechamento, o postmortem também sobe com commit + push na
+  hora (piso 22): incidente cujo registro só existe na máquina não está concluído.
 - Diferencie **início do impacto** (do gráfico) de **detecção** (do alerta): a diferença é o TTD, e
   é o número que mais ensina.

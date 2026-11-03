@@ -6,6 +6,7 @@
 - Comandante (IC): @handle
 - Dados pessoais: não
 - ANPD: n/a
+- Dado perdido: não (se houve fila/DLQ/outbox: sim|não + prova entrou/saiu)
 
 ## Resumo
 Duas ou três frases: o que o usuário viu, por quanto tempo, como acabou.

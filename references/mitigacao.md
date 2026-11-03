@@ -22,7 +22,8 @@
 | **Desviar tráfego** (failover, região, cache stale) | Dependência fora | Teste de DR já feito (`schematize-infra → references/resiliencia.md`) |
 | Degradar com graça | Dependência não essencial | Modo degradado precisa estar desenhado, não improvisado |
 | Limitar taxa / bloquear origem | Abuso, tempestade de retry | Registrar a regra para remover depois |
-| Rollforward (correção) | Rollback impossível | Só com revisão rápida de 2 pares; é a opção de maior risco |
+| **Drenar / replay de DLQ ou outbox** | Dependência voltou e sobrou backlog (fila cheia, DLQ com mensagens, outbox parado) | Operação nomeada do ops (`ops queue drain`/`replay`, dry-run primeiro), nunca script na mão; só com consumidor **idempotente** (piso 28, testes 3 e 4: restart com fila cheia, reentrega); taxa limitada para não derrubar a dependência recém-recuperada; mensagem envenenada fica na DLQ para análise |
+| Rollforward (correção) | Rollback impossível | Só com revisão rápida de 2 pares; é a opção de maior risco. Segue o trilho de hotfix abaixo |
 
 ## 2b. Quem executa a mitigação em prd (pisos 23-24 da `schematize-engineering`)
 
@@ -35,6 +36,24 @@
   autoriza e registra quem/quando/por quê no canal.
 - O **postmortem registra todo desvio** (uso de break-glass, ação fora do ops, comando que faltou no
   ops) e abre ação de prevenção: implementar a operação no ops.
+
+## 2c. Hotfix/rollforward: o mesmo trilho, só acelerado (pisos 14, 22, 23 e 27)
+
+- O hotfix segue **dev -> git -> hml -> prd**: entra pelo git (push feito, `HEAD == origin`), o ops puxa e
+  confere o SHA; nada de copiar arquivo para a VPS. Rollback também é SHA/tag anterior do git.
+- O **CI remoto roda uma vez** (tag `hml-*`, disparado pelo ops), não a cada tentativa; o gate local por
+  commit roda antes. Não há "CI verde no PR" a esperar.
+- Pular hml (se a casa tem hml) é **decisão do IC**, registrada no canal com motivo e risco; sem hml no
+  projeto, o gate local + o plano de rollback valem. Pular o git nunca é opção.
+
+## 2d. Backlog (fila, DLQ, outbox): critério de "mitigado"
+
+Impacto parado não basta quando há trabalho represado. **Mitigado** = (1) a causa do represamento cessou
+(dependência de volta, consumidor saudável), (2) a **profundidade e a idade da mensagem mais antiga**
+estão caindo de forma sustentada e o ETA de drenagem foi estimado, (3) a taxa de erro/DLQ voltou ao
+normal e (4) não há duplicata nem perda (reentrega idempotente conferida por amostra/contagem). Só é
+**resolvido** com o backlog em zero, a DLQ triada (reprocessada ou descartada com decisão registrada) e a
+prova do dado: **entrou N, saiu N**. O postmortem responde "dado perdido? sim/não + prova".
 
 ## 3. Proibido na mitigação
 

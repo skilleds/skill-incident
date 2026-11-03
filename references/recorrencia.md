@@ -15,7 +15,7 @@ só pegou por sorte; ou um postmortem cuja ação é "ter mais cuidado". Declare
 1. **ADR** em `<projeto>/<projeto>_archive/decisoes/ADR-NNNN-<slug>.md`: contexto (o incidente), decisão (o piso
    novo), consequências. Formato: `schematize-docs → references/adr.md`.
 2. **Piso** nas skills/normas do projeto: regra vetada, escrita como proibição ("X nunca Y"), não como recomendação.
-3. **Gate determinístico** no CI que reprova a violação (script `check-*.sh` com teste vermelho plantado).
+3. **Gate determinístico** (local por commit; CI remoto só na promoção) que reprova a violação (script `check-*.sh` com teste vermelho plantado).
    Piso sem gate de máquina volta a ser atenção humana.
 
 Mais: o teste que reproduz o incidente entra na suíte (regressão) — visto VERMELHO antes do fix, com

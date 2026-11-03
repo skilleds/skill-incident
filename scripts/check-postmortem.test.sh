@@ -16,6 +16,7 @@ bom() { cat <<'FIX'
 - Início (UTC): 2026-10-01T14:02Z
 - Dados pessoais: não
 - ANPD: n/a
+- Dado perdido: não (entrou 3.400, saiu 3.400; DLQ vazia)
 
 ## Resumo
 Pagamentos ficaram sem processar por 28 minutos após um deploy.
@@ -69,6 +70,17 @@ caso sem-dados-pessoais 1 "dados-pessoais-indefinido" '/^- Dados pessoais/d'
 caso pessoal-sem-anpd 1 "anpd-sem-decisao" 's/^- Dados pessoais: não/- Dados pessoais: sim/; /^- ANPD/d'
 caso pessoal-com-anpd 0 "ok" 's/^- Dados pessoais: não/- Dados pessoais: sim/; s/^- ANPD: n\/a/- ANPD: 2026-10-03 (comunicado em 2 dias úteis)/'
 caso waiver 0 "ok" 's/^Pagamentos ficaram/Erro humano <!-- inc-ok: culpa-pessoa — citação literal do alerta --> pagamentos ficaram/'
+
+# --- furos conhecidos do gate (vermelho plantado): impacto fraco e timeline fraca ---
+caso impacto-1-erro 1 "impacto-sem-numero" 's/^- 1\.200 clientes.*/- 1 erro/; s/^- 3\.400 requisi.*/- 2 erros/'
+caso impacto-sem-duracao 1 "impacto-sem-numero" 's/^- 1\.200 clientes.*/- 1.200 clientes afetados/; s/^- 3\.400 requisi.*/- 3.400 requisições com erro/'
+caso impacto-sem-escopo 1 "impacto-sem-numero" 's/^- 1\.200 clientes.*/- Duração de 28 minutos/; s/^- 3\.400 requisi.*/- Bastante gente/'
+caso timeline-hora-so-na-prosa 1 "timeline-curta" 's/^\| 14:09.*/Às 14:09 o alerta disparou, 14:15 alguém viu e 14:20 abriu canal./; /^\| 14:30/d'
+caso timeline-horas-repetidas 1 "timeline-curta" 's/^\| 14:09 /| 14:02 /; s/^\| 14:30 /| 14:02 /'
+caso timeline-hora-invalida 1 "timeline-curta" 's/^\| 14:09 /| 99:99 /; s/^\| 14:30 /| 77:88 /'
+caso timeline-sem-descricao 1 "timeline-curta" 's/^\| 14:09 .*/| 14:09 | x |/; s/^\| 14:30 .*/| 14:30 | y |/'
+caso fila-sem-dado-perdido 1 "dado-perdido-indefinido" '/^- Dado perdido/d'
+caso verde-bullets 0 "ok" 's/^\| 14:02 \| (.*)$/- 14:02 \1/'
 
 # diretório sem postmortem: 2 (não é aprovação)
 mkdir -p "$TMP/vazio"; echo "# README" >"$TMP/vazio/a.md"

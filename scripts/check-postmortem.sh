@@ -8,7 +8,7 @@
 # Waiver rastreável, por regra: `<!-- inc-ok: <regra> — <motivo> -->` no próprio arquivo.
 # Regras: secao-ausente, timeline-curta, sem-mitigacao, impacto-sem-numero, acao-sem-dono,
 #         acao-sem-prazo, sem-acoes, culpa-pessoa, dados-pessoais-indefinido, anpd-sem-decisao,
-#         causa-sem-porques.
+#         causa-sem-porques, dado-perdido-indefinido.
 # strict-ok: COLETOR — varre todos os postmortems e soma os achados; com `set -e` o primeiro `grep` sem casamento (resultado normal) abortaria (`schematize-shell` -> `references/piso.md` secao 1)
 set -uo pipefail
 
@@ -54,13 +54,22 @@ for f in "${arquivos[@]}"; do
   done
 
   tl="$(secao "$f" '(timeline|linha do tempo)')"
-  n=$(printf '%s\n' "$tl" | grep -cE '[0-9]{1,2}:[0-9]{2}')
-  [ "$n" -ge 3 ] || falha timeline-curta "timeline com $n entradas datadas (mínimo 3: detecção, mitigação, resolução)"
-  printf '%s' "$tl" | grep -qiE 'mitig|conten|rollback|revert' || falha sem-mitigacao "timeline sem o momento da mitigação (mitigar vem antes de diagnosticar)"
+  # Entrada de timeline = linha que COMEÇA (linha de tabela, bullet ou item numerado) com HH:MM válido
+  # (00-23:00-59), opcionalmente precedido de data ISO. HH:MM solto em prosa não conta, nem repetido:
+  # contam horários DISTINTOS, cada um com descrição (>= 8 caracteres depois da hora).
+  entradas="$(printf '%s\n' "$tl" | grep -E '^[[:space:]]*(\|[[:space:]]*|[-*][[:space:]]+|[0-9]+\.[[:space:]]+)?(\*\*)?([0-9]{4}-[0-9]{2}-[0-9]{2}[T ])?([01]?[0-9]|2[0-3]):[0-5][0-9]' || true)"
+  n=$(printf '%s\n' "$entradas" | sed -E 's/^[[:space:]]*(\|[[:space:]]*|[-*][[:space:]]+|[0-9]+\.[[:space:]]+)?(\*\*)?([0-9]{4}-[0-9]{2}-[0-9]{2}[T ])?(([01]?[0-9]|2[0-3]):[0-5][0-9])(.*)$/\4\t\6/' \
+      | awk -F'\t' 'NF>=2 && length($2) >= 8 && !seen[$1]++ {c++} END{print c+0}')
+  [ "$n" -ge 3 ] || falha timeline-curta "timeline com $n entradas válidas (mínimo 3 horários distintos, cada um no início da linha e com descrição: detecção, mitigação, resolução)"
+  printf '%s' "$entradas" | grep -qiE 'mitig|conten|rollback|revert' || falha sem-mitigacao "timeline sem o momento da mitigação (mitigar vem antes de diagnosticar)"
 
+  # Impacto = ESCOPO (quem/quanto: %, usuários, clientes, requisições, R$...) E DURAÇÃO (por quanto tempo).
+  # "1 erro" não é impacto: sem duração e sem escopo de usuário/negócio.
   im="$(secao "$f" 'impacto')"
-  printf '%s' "$im" | grep -qiE '[0-9]+([.,][0-9]+)? ?(%|min|minutos|h\b|horas|ms|s\b|usuários|usuarios|clientes|requisi|req\b|erros|pedidos|transa|r\$|us\$|e-?mails|tenants|registros|falhas)' \
-    || falha impacto-sem-numero "impacto sem número (quem, quanto, por quanto tempo)"
+  escopo=0; dur=0
+  printf '%s' "$im" | grep -qiE '[0-9]+([.,][0-9]+)? ?(%|usuários|usuarios|clientes|tenants|requisi|req\b|pedidos|transa|r\$|us\$|e-?mails|registros|contas|sessões|sessoes|falhas)' && escopo=1
+  printf '%s' "$im" | grep -qiE '[0-9]+([.,][0-9]+)? ?(min|minutos|h|horas?|segundos|s|dias?)\b' && dur=1
+  { [ "$escopo" = 1 ] && [ "$dur" = 1 ]; } || falha impacto-sem-numero "impacto sem escopo E duração em número (quem/quanto + por quanto tempo; 'não medido' + action item não passa aqui — use waiver com motivo)"
 
   ca="$(secao "$f" '(causa|fatores)')"
   printf '%s' "$ca" | grep -qiE 'por ?qu[eê]|fator(es)? contribuinte|porque' \
@@ -89,6 +98,12 @@ for f in "${arquivos[@]}"; do
   elif printf '%s' "$dp" | grep -qiE ': *\**(sim|yes)'; then
     grep -qiE '^[-*]? *\**anpd\**:.*([0-9]{4}-[0-9]{2}-[0-9]{2}|não comunicar|nao comunicar|sem risco|dispensad)' "$f" \
       || falha anpd-sem-decisao "houve dado pessoal mas falta 'ANPD: <data da comunicação | não comunicar + justificativa>'"
+  fi
+
+  # Fila/DLQ/outbox/backlog no texto => declarar se houve dado perdido (piso 28), com prova.
+  if grep -qiE '\b(fila|dlq|outbox|backlog|dead[- ]letter)\b' "$f"; then
+    grep -qiE '^[-*]? *\**dado perdido\**: *\**(sim|não|nao|yes|no)' "$f" \
+      || falha dado-perdido-indefinido "menciona fila/DLQ/outbox/backlog mas falta 'Dado perdido: sim|não' (+ prova entrou/saiu)"
   fi
 
   if [ "${#achados[@]}" -gt 0 ]; then

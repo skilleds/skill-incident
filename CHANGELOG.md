@@ -3,6 +3,26 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
+## [Não lançado]
+### Corrigido
+- P1-23 `references/mitigacao.md`: alavanca "drenar/replay de DLQ ou outbox" (operação do ops, dry-run,
+  idempotência, taxa limitada), nova §2d com o critério de "mitigado" para backlog (profundidade/idade em
+  queda, sem perda nem duplicata, entrou N = saiu N) e item no postmortem ("Dado perdido: sim|não + prova").
+- P1-24 `mitigacao.md` §2c: hotfix/rollforward segue dev -> git -> hml -> prd, entra pelo git, CI remoto
+  uma vez (tag `hml-*`); pular hml é decisão registrada do IC; nunca pular o git.
+- P1-25 `papeis-e-comando.md` §3: relatório a cada 30 min e handoff do IC no archive, commit+push na hora;
+  postmortem também sobe na hora (piso 22).
+- P2-7 `scripts/check-postmortem.sh` endurecido, com teste vermelho para cada furo: impacto exige escopo E
+  duração ("1 erro" reprova); timeline conta só horários distintos, válidos, no início da linha e com
+  descrição; nova regra `dado-perdido-indefinido` (fila/DLQ/outbox/backlog exige "Dado perdido"). 25 casos.
+- P2-5 `stack-versoes.md`: Grafana OnCall OSS marcado como arquivado (README: manutenção 2025-03-11,
+  arquivado 2026-03-24; banner do GitHub: 2026-06-05; fonte diverge); prazos ANPD seguem `reverificar`.
+- `recorrencia.md` e pisos: "gate no CI" virou gate local por commit + CI de promoção.
+
+### Adicionado
+- Bloco herdado "Herda os pisos 22–29 da `schematize-engineering`" em `SKILL.md` e `assets/CLAUDE.md`.
+- Template de postmortem com a linha `Dado perdido`.
+
 ## [0.4.0] — 2026-10-31
 ### Adicionado
 - `references/mitigacao.md` §2b: a IA não executa mitigação direta na VPS; mitiga por operação do ops
