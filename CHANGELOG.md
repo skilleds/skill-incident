@@ -3,7 +3,7 @@
 Todas as mudanças relevantes deste pacote, no formato [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 com versionamento [SemVer](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
+## [0.5.0] — 2026-11-03
 ### Corrigido
 - P1-23 `references/mitigacao.md`: alavanca "drenar/replay de DLQ ou outbox" (operação do ops, dry-run,
   idempotência, taxa limitada), nova §2d com o critério de "mitigado" para backlog (profundidade/idade em
